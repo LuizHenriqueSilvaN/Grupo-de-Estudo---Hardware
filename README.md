@@ -1,2 +1,2 @@
-# Grupo-de-Estudo---Hardware
+# Grupo de Estudo - Hardware
 Filtros de Suavização
