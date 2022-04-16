@@ -44,12 +44,14 @@ def main():
     in_imag.show() # mostra a entrada
 
     # pré-processamento para segmentar as bordas
-    gray = in_imag.toGray() ################   1     ########
+    grayAux = in_imag.toGray() ################ FEITO ########
+    gray = grayAux[0]
+    print('Imagem na Escala Cinza')
 
     # normaliza os pesos dos filtros 
-    blur = blurFilter/blurFilter.sum() # borramento
+    blurKernel = blurFilter/blurFilter.sum() # borramento
     #borramento elimina as bordas que são menos intensas
-    blurred = gray.filtre(blur) ###########   2    ########
+    blurred = gray.filtre(blurKernel) ###########   2    ########
 
     edges = blurred.segmentEdges(threshold) ######    3    #####
     print('Imagem das bordas Segmentadas: ')
@@ -105,6 +107,20 @@ class Image:
 
     def toGray(self): 
         # (self) >>> Retorna uma imagem convertida para cinza. Para tanto é preciso carregar uma imagem colorida em .png
+        
+        """
+        rgb_greyscale = np.zeros( (rgb.shape[0],rgb.shape[1]), dtype=np.uint8)
+        for row in range(0, rgb.shape[0]):
+            for col in range(0, rgb.shape[1]):
+                rgb_greyscale[row][col] = int(0.2126 * rgb[row][col][0] + 0.7152 * rgb[row][col][1] + 0.0722 * rgb[row][col][2])
+        return rgb_greyscale
+        """
+
+        rgb = self.data
+        r, g, b = rgb[:,:,0], rgb[:,:,1], rgb[:,:,2]
+        gray = (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
+
+        return [gray, plt.imshow(gray, cmap='gray')]
         
 
     def binarize(self, threshold): 
