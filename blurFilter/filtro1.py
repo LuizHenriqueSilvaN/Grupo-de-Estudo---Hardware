@@ -51,14 +51,14 @@ def main():
     # normaliza os pesos dos filtros 
     blurKernel = blurFilter/blurFilter.sum() # borramento
     #borramento elimina as bordas que são menos intensas
-    blurred = gray.filtre(blurKernel) ###########   2    ########
+    blurred = gray.filtre(blurKernel) ###########   2 - FALTA FAZER    ########
 
-    edges = blurred.segmentEdges(threshold) ######    3    #####
+    edges = blurred.segmentEdges(threshold) ######    3 - FALTA FAZER   #####
     print('Imagem das bordas Segmentadas: ')
     edges.show()
 
     #realce das bordas na imagem original
-    painted = in_imag.paint(black, edges) ######   4    ###########
+    painted = in_imag.paint(black, edges) ######   4 - FALTA FAZER   ###########
     print('Imagens com bordas realçadas')
     painted.show()
 
