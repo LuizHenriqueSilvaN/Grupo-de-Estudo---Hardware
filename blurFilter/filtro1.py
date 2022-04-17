@@ -35,7 +35,7 @@ def main():
     # leitura dos parâmetros
     in_Name  = input('Nome do Arquivo de entrada (.pgn):')
     out_Name = input('Nome do Arquivo na Saída (.pgn):')
-    threshold  = input('Limiar desejado (Número inteiro):')
+    threshold  = int(input('Limiar desejado (Número inteiro):'))
 
     # carrega a imagem de entrada
     in_imag = Image() # entrada
