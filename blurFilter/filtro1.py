@@ -104,7 +104,7 @@ class Image:
             plt.imshow(self.data)
     
         plt.show()
-
+    #-----------------------------------------------------------------------------------------------------------
     def toGray(self): 
         # (self) >>> Retorna uma imagem convertida para cinza. Para tanto é preciso carregar uma imagem colorida em .png
         
@@ -122,20 +122,30 @@ class Image:
 
         return [gray, plt.imshow(gray, cmap='gray')]
         
-
+    #-----------------------------------------------------------------------------------------------------------
     def binarize(self, threshold): 
         # (self, inteiro) >>> retorna uma imagem convertida para binário.
-
-
+        def binarize(self, threshold): 
+        # (self, inteiro) >>> retorna uma imagem convertida para binário. 
+        rgbBin = self.data
+        for row in range(0, rgbBin.shape[0]):
+            for col in range(0, rgbBin.shape[1]):
+                if rgbBin[row][col] <= threshold:
+                    rgbBin[row,col] = (0,0,0)
+                else:
+                    rgbBin[row,col] = (255,255,255)
+                
+        return [rgbBin, plt.imshow(rgbBin)]
+    #-----------------------------------------------------------------------------------------------------------
     def filtre(self, filtro): 
         # (self, ndarray) >>> Imagem Cinza. Este Método retorna uma imagem da convolução de Self com o filtro.
         # Como os valores do filtro são reais, os valores da imagem resultado também serão reais.
 
-        
+    #-----------------------------------------------------------------------------------------------------------    
     def paint(self, color, mask): 
         # (self, cor, Imagem) >>> Imagem; Recebe uma imagem binária e pinta os pixels de self correspondentes aos pixels Trfue da mascara com a cor.
         # Obeservar  que a cor  deve ter o mesmo numero de bits da imagem em self.
-
+    #-----------------------------------------------------------------------------------------------------------
     def segmentEdges(self, threshold): 
         """Assumir que self é uma imagem com níveis de cinza. 
         O método calcula as matrizes gradiente gH e gV
@@ -150,5 +160,5 @@ class Image:
         módulo do gradiente (sqrt(gH*gH + gV*gV)) deve ser normalizada para
         o intervalo 0 a 255."""
 
-# EXECUÇÃO DA MAIN ----------------------------------------------------------------------------
+
 main()
