@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt   #plt.imshow para mostar imagens na tela
 import imageio                    # im.imread e im.imsave para carregar e salvar imagens em .png
+from scipy.signal import convolve2d 
+
 
 # cores básicas 
 red   = (255,0,0)
@@ -23,42 +25,61 @@ blurFilter = np.array(
 # Filtro detector de borda
 borderFilter = np.array(
      [
-        [ 0, -4,  0],
-        [-4, 16, -4],
-        [ 0, -4,  0]
+        [ 0, -2,  0],
+        [-2, 4, -2],
+        [ 0, -2,  0]
     ]
 )
+
+sobelFilter = np.array(
+        [[-1, 0, 1], 
+         [-2, 0, 2], 
+         [-1, 0, 1]]
+)
+
+# Desfoque de caixa ou Filtro Linear de Caixa; Filtro Passa Baixa de Raio 1(3x3)
+# O parâmetro d deve ser preferencialmente ímpar; d >= 3
+d = 11
+boxBlurFilter = np.ones((d,d))
 
 # PROGRAMA PRINCIPAL -----------------------------------------------------------------------
 
 def main():
     # leitura dos parâmetros
-    in_Name  = 'rodovia.jpg'#input('Nome do Arquivo de entrada (.pgn):')
-    out_Name = 'rodovia2.jpg'#input('Nome do Arquivo na Saída (.pgn):')
-    threshold  = 200#int(input('Limiar desejado (Número inteiro):'))
+    in_Name    = input('Nome do Arquivo de entrada (.pgn):')
+    out_Name   = 'saídaProvisória.jpg'#input('Nome do Arquivo na Saída (.pgn):')
+    threshold  = int(input('Limiar desejado (Número inteiro):'))
+    
 
     # carrega a imagem de entrada
     in_imag = Image() # entrada
     in_imag.load(in_Name) # carregamento da entrada
     print('Imagem de Entrada:', in_Name)
+    print('LIMIAR(threshold) = ',threshold)
     original_imag = imageio.imread(in_Name)
     
     # pré-processamento para segmentar as bordas
-    gray = in_imag.toGray() ################ FEITO ########
-
+    gray = in_imag.toGray() ################ 1 - FEITO ########
+    
     # imagem Binarizada
     rgbBin = in_imag.binarize(threshold)
 
     #Mostra Imagens
     legenda = ['Imagem original','Imagem com níveis de Cinza','Imagem Binarizada']
     showImages([original_imag,gray,rgbBin], legenda, (17,11), 3, 1)
-
+    
     # normaliza os pesos dos filtros 
-    blurKernel = blurFilter/blurFilter.sum() # borramento
+    blurKernel     = boxBlurFilter/int(np.abs(boxBlurFilter).sum()) ###################### borramento ###################
+    sobelKernel    = sobelFilter/(np.abs(sobelFilter).sum())
+    detectorBordas = borderFilter/(np.abs(borderFilter).sum())
 
     #borramento elimina as bordas que são menos intensas
-    blurred = gray.filtre(blurKernel) ###########   2 - FALTA FAZER    ########
-    
+    blurred = in_imag.filtre(gray, blurKernel) ###########   2 - FEITO    ########
+    Sobel   = in_imag.filtre(gray, sobelKernel)
+    bordas  = in_imag.filtre(gray, detectorBordas)
+    legenda = ['Imagem Borrada', 'Filtro Sobel',' Detector de Bordas']
+    showImages([blurred, Sobel, bordas], legenda, (17,11), 3, 1)
+
     edges = blurred.segmentEdges(threshold) ######    3 - FALTA FAZER   #####
     print('Imagem das bordas Segmentadas: ')
     edges.show()
@@ -128,19 +149,23 @@ class Image:
     
     #-----------------------------------------------------------------------------------------------------------
     
-    def filtre(self, filtro): 
+    def filtre(self,gray, filtro): 
         # (self, ndarray) >>> Imagem Cinza. Este Método retorna uma imagem da convolução de Self com o filtro.
         # Como os valores do filtro são reais, os valores da imagem resultado também serão reais.
+        A = gray
+        B = filtro
+        imFiltered = convolve2d( A, B, mode='valid')
+        return imFiltered
 
     #-----------------------------------------------------------------------------------------------------------    
     
-    def paint(self, color, mask): 
+    #def paint(self, color, mask): 
         # (self, cor, Imagem) >>> Imagem; Recebe uma imagem binária e pinta os pixels de self correspondentes aos pixels Trfue da mascara com a cor.
         # Obeservar  que a cor  deve ter o mesmo numero de bits da imagem em self.
     
     #-----------------------------------------------------------------------------------------------------------
     
-    def segmentEdges(self, threshold): 
+    #def segmentEdges(self, threshold): 
         """Assumir que self é uma imagem com níveis de cinza. 
         O método calcula as matrizes gradiente gH e gV
         utilizando os filtros Sh e Sv de Sobel, e retorna uma imagem 
