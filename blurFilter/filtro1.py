@@ -33,26 +33,32 @@ borderFilter = np.array(
 
 def main():
     # leitura dos parâmetros
-    in_Name  = input('Nome do Arquivo de entrada (.pgn):')
-    out_Name = input('Nome do Arquivo na Saída (.pgn):')
-    threshold  = int(input('Limiar desejado (Número inteiro):'))
+    in_Name  = 'rodovia.jpg'#input('Nome do Arquivo de entrada (.pgn):')
+    out_Name = 'rodovia2.jpg'#input('Nome do Arquivo na Saída (.pgn):')
+    threshold  = 200#int(input('Limiar desejado (Número inteiro):'))
 
     # carrega a imagem de entrada
     in_imag = Image() # entrada
     in_imag.load(in_Name) # carregamento da entrada
     print('Imagem de Entrada:', in_Name)
-    in_imag.show() # mostra a entrada
-
+    original_imag = imageio.imread(in_Name)
+    
     # pré-processamento para segmentar as bordas
-    grayAux = in_imag.toGray() ################ FEITO ########
-    gray = grayAux[0]
-    print('Imagem na Escala Cinza')
+    gray = in_imag.toGray() ################ FEITO ########
+
+    # imagem Binarizada
+    rgbBin = in_imag.binarize(threshold)
+
+    #Mostra Imagens
+    legenda = ['Imagem original','Imagem com níveis de Cinza','Imagem Binarizada']
+    showImages([original_imag,gray,rgbBin], legenda, (17,11), 3, 1)
 
     # normaliza os pesos dos filtros 
     blurKernel = blurFilter/blurFilter.sum() # borramento
+
     #borramento elimina as bordas que são menos intensas
     blurred = gray.filtre(blurKernel) ###########   2 - FALTA FAZER    ########
-
+    
     edges = blurred.segmentEdges(threshold) ######    3 - FALTA FAZER   #####
     print('Imagem das bordas Segmentadas: ')
     edges.show()
@@ -70,6 +76,9 @@ def main():
 # CLASSE IMAGEM ------------------------------------------------------------------------
 
 class Image:
+    
+    #-----------------------------------------------------------------------------------------------------------
+    
     def _init_(self, array = None): 
         #Construtor de um objeto Imagem, que recebe um array com o conteúdo da imagem.
         if array is not None:
@@ -93,59 +102,44 @@ class Image:
          # (Str) >>> None; Aqui também será salvo em extensão .png
         imageio.imsave(file,self.data)
 
-    def show(self): 
-        # (self) >>> None; Exibir imagem numa janela
-        s = self.data.shape
-        if len(s) == 2:
-            #níveis de cinza
-            plt.imshow(self.data, cmap = plt.cm.gray)
-        else:
-            #imagem colorida
-            plt.imshow(self.data)
-    
-        plt.show()
     #-----------------------------------------------------------------------------------------------------------
+    
     def toGray(self): 
-        # (self) >>> Retorna uma imagem convertida para cinza. Para tanto é preciso carregar uma imagem colorida em .png
-        
-        """
-        rgb_greyscale = np.zeros( (rgb.shape[0],rgb.shape[1]), dtype=np.uint8)
-        for row in range(0, rgb.shape[0]):
-            for col in range(0, rgb.shape[1]):
-                rgb_greyscale[row][col] = int(0.2126 * rgb[row][col][0] + 0.7152 * rgb[row][col][1] + 0.0722 * rgb[row][col][2])
-        return rgb_greyscale
-        """
 
         rgb = self.data
         r, g, b = rgb[:,:,0], rgb[:,:,1], rgb[:,:,2]
         gray = (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
 
-        return [gray, plt.imshow(gray, cmap='gray')]
+        return gray
         
     #-----------------------------------------------------------------------------------------------------------
+    
     def binarize(self, threshold): 
-        # (self, inteiro) >>> retorna uma imagem convertida para binário.
-        def binarize(self, threshold): 
         # (self, inteiro) >>> retorna uma imagem convertida para binário. 
         rgbBin = self.data
         for row in range(0, rgbBin.shape[0]):
             for col in range(0, rgbBin.shape[1]):
-                if rgbBin[row][col] <= threshold:
+                if (rgbBin[row][col] <= threshold).any():
                     rgbBin[row,col] = (0,0,0)
                 else:
                     rgbBin[row,col] = (255,255,255)
                 
-        return [rgbBin, plt.imshow(rgbBin)]
+        return rgbBin
+    
     #-----------------------------------------------------------------------------------------------------------
+    
     def filtre(self, filtro): 
         # (self, ndarray) >>> Imagem Cinza. Este Método retorna uma imagem da convolução de Self com o filtro.
         # Como os valores do filtro são reais, os valores da imagem resultado também serão reais.
 
     #-----------------------------------------------------------------------------------------------------------    
+    
     def paint(self, color, mask): 
         # (self, cor, Imagem) >>> Imagem; Recebe uma imagem binária e pinta os pixels de self correspondentes aos pixels Trfue da mascara com a cor.
         # Obeservar  que a cor  deve ter o mesmo numero de bits da imagem em self.
+    
     #-----------------------------------------------------------------------------------------------------------
+    
     def segmentEdges(self, threshold): 
         """Assumir que self é uma imagem com níveis de cinza. 
         O método calcula as matrizes gradiente gH e gV
@@ -160,5 +154,60 @@ class Image:
         módulo do gradiente (sqrt(gH*gH + gV*gV)) deve ser normalizada para
         o intervalo 0 a 255."""
 
+#-----------------------------------------------------------------------------------------------------------
 
+# Métodos apenas para exibição de imagens
+
+def showImage(imag, title, size):
+    fig, axis = plt.subplots(figsize = size)
+
+    axis.imshow(imag,'gray')
+    axis.set_title(title, fontdict = {'fontsize':22,'fontweight':'medium'})
+    plt.show()
+
+def showImages(imagArray,titleArray, size, x,y):
+    if(x<1 | y<1):
+        print('ERRO: x e y não podem ser zero ou abaixo de zero.')
+        return
+    elif(x==1 & y==1):
+        showImage(imagArray, titleArray)
+    elif(x==1):
+        fig, axis = pltsubplots(y, figsize = size)
+        yId = 0
+        for imag in imagArray:
+            axis[yId].imshow(imag,'gray')
+            axis[yId].set_anchor('NW')
+            axis[yId].set_title(titleArray[yId], fontdict = {'fontsize': 18, 'fontweight': 'medium'}, pad = 10)
+
+            yId += 1
+
+    elif(y ==1):
+        fig, axis = plt.subplots(1,x,figsize = size)
+        fig.suptitle(titleArray)
+        xId = 0
+        for imag in imagArray:
+            axis[xId].imshow(imag,'gray')
+            axis[xId].set_anchor('NW')
+            axis[xId].set_title(titleArray[xId], fontdict = {'fontsize': 18, 'fontweight': 'medium'}, pad = 10)
+
+            xId += 1
+
+    else:
+        fig, axis = plt.subplots(y,x,figsize =size)
+        xId, yId, titleId = (0,0,0)
+        for imag in imagArray:
+            axis[yId,xId].imshow(imag,'gray')
+            axis[yId,xId].set_anchor('NW')
+            axis[yId,xId].set_title(titleArray[titleId], fontdict = {'fontsize': 18, 'fontweight': 'medium'}, pad = 10)
+            if len(titleArray[titleId])==0:
+                axis[yId,xId].axis('off')
+
+            titleId += 1
+            xId += 1
+            if xId == x:
+                xId = 0
+                yId += 1
+    plt.show()
+
+#Execução da main
 main()
