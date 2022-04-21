@@ -14,40 +14,40 @@ white = (255,255,255)
 # alguns filtros de convolução 
 blurFilter = np.array(
     [
-        [0, 1, 2, 1, 0],
-        [1, 2, 4, 2, 1],
-        [2, 4, 8, 4, 2],
-        [1, 2, 4, 2, 1],
-        [0, 1, 2, 1, 0]
+        [2, 4, 5, 4, 2],
+        [4, 9, 12, 9, 4],
+        [5, 12, 15, 12, 5],
+        [4, 9, 12, 9, 4],
+        [2, 4, 5, 4, 2]
     ]
 )
 
 # Filtro detector de borda
 borderFilter = np.array(
      [
-        [ 0, -2,  0],
-        [-2, 4, -2],
-        [ 0, -2,  0]
+        [ 0, -8,  0],
+        [-8, 16, -8],
+        [ 0, -8,  0]
     ]
 )
 
 sobelFilter = np.array(
-        [[-1, 0, 1], 
-         [-2, 0, 2], 
-         [-1, 0, 1]]
+        [[47, 0,-47], 
+         [162, 0, -162], 
+         [47, 0, -47]]
 )
 
-# Desfoque de caixa ou Filtro Linear de Caixa; Filtro Passa Baixa de Raio 1(3x3)
+# Desfoque de caixa ou Filtro Linear de Caixa; Filtro Passa Baixa de Raio 4, Matrix 9x9
 # O parâmetro d deve ser preferencialmente ímpar; d >= 3
-d = 11
+d = 9
 boxBlurFilter = np.ones((d,d))
 
 # PROGRAMA PRINCIPAL -----------------------------------------------------------------------
 
 def main():
     # leitura dos parâmetros
-    in_Name    = input('Nome do Arquivo de entrada (.pgn):')
-    out_Name   = 'saídaProvisória.jpg'#input('Nome do Arquivo na Saída (.pgn):')
+    in_Name    = input('Nome do Arquivo de entrada:')
+    out_Name   = 'saídaProvisória.jpg'#input('Nome do Arquivo na Saída:')
     threshold  = int(input('Limiar desejado (Número inteiro):'))
     
 
