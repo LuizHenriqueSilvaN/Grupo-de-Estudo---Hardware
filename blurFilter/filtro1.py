@@ -235,4 +235,5 @@ def showImages(imagArray,titleArray, size, x,y):
     plt.show()
 
 #Execução da main
-main()
+if __name__ == '__main__':
+    main()
