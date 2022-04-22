@@ -7,7 +7,7 @@ img = 'Imagem.png'
 im = Im.open(img)
 
 
-def change(median_nbr):  # obtendo a cor do pixel
+def change(median_nbr):  # obtendo a cor do pixel, ainda tô trabalhando nessa função
     """Se a cor do pixel for maior que o limite de 255, retorna a cor media,
     else mantem o valor original da cor do pixel"""
 
