@@ -8,8 +8,6 @@ im = Im.open(img)
 
 
 def change(cor, mean_nbr, rng):  # pega as cores do pixel
-    #if the pixel color is bigger than the range or smaller than 255-range return the medium color else
-    #maintains the original value
 
     if cor > rng:
         return int(mean_nbr)
