@@ -65,7 +65,7 @@ for i in range(1, im.size[0] - 1, 3):
 
         # retorna um dicionario com as posições e listas de cores
 
-keys = [k for k in new_colors.keys()]  # get  the positions as a list
+keys = [k for k in new_colors.keys()]  # obtem as posiç
 for k in keys:
     r, g, b = new_colors[(k)]  # get the values as a list
     im.putpixel((k), (r, g, b))  # muda os valores das cores dos pixels
